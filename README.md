@@ -1,88 +1,82 @@
-# SoftDocs — GED & Processus Financiers
+# SoftDocs v5 — GED & Processus Financiers
 
-Application de Gestion Électronique de Documents (GED) avec circuits de validation, OCR, paiements XML et tableaux de bord.
+Système de gestion électronique de documents (GED) avec circuit de validation, OCR, paiements XML et gestion des droits par projet/site.
 
 ## 🚀 Démarrage rapide
 
-### Prérequis
-- Node.js 18+
-- npm 9+
-
-### Installation
-
 ```bash
 npm install
-```
-
-### Développement local
-
-```bash
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+Ouvrir http://localhost:3000
 
-### Production
+## 📦 Build & Déploiement Vercel
 
 ```bash
 npm run build
-npm run start
 ```
 
-## ☁️ Déploiement sur Vercel
-
-### Option 1 — Via GitHub (recommandé)
-
-1. Poussez ce dossier sur GitHub
-2. Connectez-vous sur [vercel.com](https://vercel.com)
-3. Cliquez "New Project" → importez votre repo
-4. Vercel détecte automatiquement Next.js
-5. Cliquez "Deploy" ✅
-
-### Option 2 — Via Vercel CLI
-
-```bash
-npm install -g vercel
-vercel
-```
-
-### Option 3 — Drag & Drop sur v0.dev
-
-1. Copiez le contenu de `pages/index.js`
-2. Allez sur [v0.dev](https://v0.dev)
-3. Collez dans le prompt ou utilisez l'éditeur
-
-## 📁 Structure du projet
-
-```
-softdocs/
-├── pages/
-│   ├── _app.js          # App wrapper avec CSS global
-│   └── index.js         # Application principale
-├── components/
-│   ├── data.js          # Données, tokens de design, helpers
-│   └── ui.js            # Composants UI réutilisables
-├── styles/
-│   └── globals.css      # CSS global + Tailwind + Google Fonts
-├── next.config.js
-├── tailwind.config.js
-├── package.json
-└── vercel.json
-```
+Ou simplement déposer le projet sur Vercel (import GitHub).
 
 ## 🎨 Thème
 
-- Couleur principale : `#324372`
-- Couleur secondaire : `#ADA660`
-- Police : DM Sans + JetBrains Mono
+- Couleur principale : `#324372` (navy)
+- Style AdminLTE moderne
+- Sidebar sombre, navbar blanche
+
+## 🏗️ Structure du projet
+
+```
+src/
+├── app/              # Next.js App Router
+│   ├── layout.js     # Layout global + fonts
+│   ├── page.js       # Page principale
+│   └── globals.css   # Styles globaux
+├── context/
+│   └── AppContext.jsx # État global (React Context)
+├── lib/
+│   ├── theme.js      # Design tokens & helpers CSS-in-JS
+│   ├── data.js       # Données initiales & DOC_MENUS
+│   └── utils.js      # Utilitaires (fmtN, gid, ocrSim…)
+└── components/
+    ├── layout/
+    │   ├── Sidebar.jsx   # Navigation latérale
+    │   ├── Topbar.jsx    # Barre supérieure + fil d'Ariane
+    │   └── AppShell.jsx  # Shell principal (routing)
+    ├── ui/
+    │   ├── Icons.jsx     # Bibliothèque SVG icons
+    │   ├── Badge.jsx     # Badge statut + Avatar
+    │   ├── Modal.jsx     # Modale réutilisable
+    │   └── FormGroup.jsx # Groupe de formulaire
+    ├── dashboard/
+    │   └── Dashboard.jsx # Tableau de bord avec KPIs + Charts
+    ├── documents/
+    │   ├── OCRScanner.jsx # Scan + extraction OCR simulé
+    │   ├── DepotDoc.jsx   # Wizard dépôt en 4 étapes
+    │   ├── DocDetail.jsx  # Vue détail + circuit validation
+    │   ├── DocList.jsx    # Liste filtrée de documents
+    │   └── SuiviDoc.jsx   # Suivi par référence
+    ├── users/
+    │   └── GestionUsers.jsx # CRUD utilisateurs + droits
+    ├── payments/
+    │   ├── PaiementsXML.jsx # Génération XML bancaire
+    │   └── Liquidations.jsx # Gestion liquidations
+    └── params/
+        ├── ParamTypes.jsx    # Types de documents + circuits
+        └── ParamReceveurs.jsx # Configuration receveurs
+```
 
 ## ✨ Fonctionnalités
 
-- 📊 Tableau de bord avec KPIs et graphiques
-- 📄 Dépôt de documents avec OCR simulé
-- 🔀 Circuits de validation configurables
-- 💳 Gestion des liquidations
-- 🏦 Génération de fichiers XML de paiement (SEPA / SWIFT)
-- 👥 Gestion des utilisateurs et droits
-- 🔍 Suivi de l'évolution des documents
-- 🔒 Circuit confidentiel
+- ✅ Gestion de sites par projet (6 villes Madagascar)
+- ✅ Circuit de validation configurable multi-étapes
+- ✅ OCR simulé avec score de confiance et correction
+- ✅ Montant réel corrigeable après OCR
+- ✅ Workflow "Bon à payer" → génération XML
+- ✅ Paiements XML (SEPA/SWIFT) avec nature de remise configurable
+- ✅ 7 droits configurables par utilisateur
+- ✅ Autorisations projet + site granulaires
+- ✅ Dashboard avec 7 KPIs + 4 graphiques Recharts
+- ✅ Documents confidentiels isolés
+- ✅ Liquidations et suivi de paiement
