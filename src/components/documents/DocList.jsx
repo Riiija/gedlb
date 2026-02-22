@@ -88,9 +88,16 @@ export function DocList({title,iconKey="file",docs,onSel}){
                     onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                     <td style={TD}>
                       <div style={{fontWeight:600,color:P,fontSize:13}}>{d.id}</div>
-                      {d.conf&&<span style={{display:"inline-flex",alignItems:"center",gap:3,fontSize:10,color:"#5e1d8a"}}>
-                        <span style={{display:"flex"}}>{IC.lock}</span> Confidentiel
-                      </span>}
+                      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginTop:2}}>
+                        {d.origin==="portail-fournisseur"&&(
+                          <span style={{display:"inline-flex",alignItems:"center",gap:3,fontSize:10,background:"#e8f5ff",color:"#1560bd",padding:"1px 6px",borderRadius:3,fontWeight:600,border:"1px solid #b8d9f5"}}>
+                            Portail web
+                          </span>
+                        )}
+                        {d.conf&&<span style={{display:"inline-flex",alignItems:"center",gap:3,fontSize:10,color:"#5e1d8a"}}>
+                          <span style={{display:"flex"}}>{IC.lock}</span> Confidentiel
+                        </span>}
+                      </div>
                     </td>
                     <td style={TD}>
                       <span style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:12,color:"#495057"}}>

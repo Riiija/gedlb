@@ -1,29 +1,66 @@
 "use client";
-import{createContext,useContext,useState}from"react";
-import{INIT_DOCS,INIT_USERS,INIT_TYPES,INIT_SCHEMAS,INIT_RECV,INIT_LIQ}from"../lib/data";
+import { createContext, useContext, useState, useEffect } from "react";
+import { INIT_DOCS, INIT_USERS, INIT_TYPES, INIT_SCHEMAS, INIT_RECV, INIT_LIQ } from "../lib/data";
 
-const AppCtx=createContext(null);
+const AppCtx = createContext(null);
 
-export function AppProvider({children}){
-  const[docs,setDocs]=useState(INIT_DOCS);
-  const[users,setUsers]=useState(INIT_USERS);
-  const[types,setTypes]=useState(INIT_TYPES);
-  const[schemas,setSchemas]=useState(INIT_SCHEMAS);
-  const[recv,setRecv]=useState(INIT_RECV);
-  const[liq,setLiq]=useState(INIT_LIQ);
-  const[view,setView]=useState("dashboard");
-  const[selDoc,setSelDoc]=useState(null);
-  const[docCtx,setDocCtx]=useState("en-cours");
-  const[sidebarOpen,setSidebarOpen]=useState(true);
+const LS_FOURN_DOCS = "softdocs_fourn_docs";
+const lsGet = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
 
-  const addDoc=d=>setDocs(p=>[...p,d]);
-  const updDoc=u=>{setDocs(p=>p.map(d=>d.id===u.id?u:d));setSelDoc(u);};
-  const openDoc=(d,ctx)=>{setSelDoc(d);setDocCtx(ctx||"en-cours");setView("detail");};
+export function AppProvider({ children }) {
+  const [docs,        setDocs]        = useState(INIT_DOCS);
+  const [users,       setUsers]       = useState(INIT_USERS);
+  const [types,       setTypes]       = useState(INIT_TYPES);
+  const [schemas,     setSchemas]     = useState(INIT_SCHEMAS);
+  const [recv,        setRecv]        = useState(INIT_RECV);
+  const [liq,         setLiq]         = useState(INIT_LIQ);
+  const [view,        setView]        = useState("dashboard");
+  const [selDoc,      setSelDoc]      = useState(null);
+  const [docCtx,      setDocCtx]      = useState("en-cours");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  return(
-    <AppCtx.Provider value={{docs,setDocs,users,setUsers,types,setTypes,schemas,setSchemas,recv,setRecv,liq,setLiq,view,setView,selDoc,setSelDoc,docCtx,setDocCtx,sidebarOpen,setSidebarOpen,addDoc,updDoc,openDoc}}>
+  /* Load fournisseur portal submissions on mount */
+  useEffect(() => {
+    const fourn = lsGet(LS_FOURN_DOCS);
+    if (Array.isArray(fourn) && fourn.length > 0) {
+      setDocs(prev => {
+        const existingIds = new Set(prev.map(d => d.id));
+        const newDocs = fourn.filter(d => !existingIds.has(d.id));
+        return newDocs.length > 0 ? [...prev, ...newDocs] : prev;
+      });
+    }
+  }, []);
+
+  /* Poll every 15s for new fournisseur submissions */
+  useEffect(() => {
+    const iv = setInterval(() => {
+      const fourn = lsGet(LS_FOURN_DOCS);
+      if (Array.isArray(fourn) && fourn.length > 0) {
+        setDocs(prev => {
+          const existingIds = new Set(prev.map(d => d.id));
+          const newDocs = fourn.filter(d => !existingIds.has(d.id));
+          return newDocs.length > 0 ? [...prev, ...newDocs] : prev;
+        });
+      }
+    }, 15000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const addDoc  = (d) => setDocs(p => [...p, d]);
+  const updDoc  = (u) => { setDocs(p => p.map(d => d.id === u.id ? u : d)); setSelDoc(u); };
+  const openDoc = (d, ctx) => { setSelDoc(d); setDocCtx(ctx || "en-cours"); setView("detail"); };
+
+  return (
+    <AppCtx.Provider value={{
+      docs, setDocs, users, setUsers, types, setTypes,
+      schemas, setSchemas, recv, setRecv, liq, setLiq,
+      view, setView, selDoc, setSelDoc, docCtx, setDocCtx,
+      sidebarOpen, setSidebarOpen,
+      addDoc, updDoc, openDoc,
+    }}>
       {children}
     </AppCtx.Provider>
   );
 }
-export const useApp=()=>useContext(AppCtx);
+
+export const useApp = () => useContext(AppCtx);

@@ -53,6 +53,14 @@ export function Topbar(){
             </span>
           )}
 
+          {/* Supplier portal link */}
+          <a href="/fournisseur" target="_blank" rel="noopener noreferrer"
+            style={{display:"inline-flex",alignItems:"center",gap:6,padding:"7px 13px",borderRadius:RSm,border:`1px solid ${BD}`,background:"#f8f9fc",color:MUT,fontSize:12,fontWeight:600,textDecoration:"none",transition:TR,whiteSpace:"nowrap"}}
+            onMouseEnter={e=>{e.currentTarget.style.background="#eef1f8";e.currentTarget.style.color=P;e.currentTarget.style.borderColor=P+"88";}}
+            onMouseLeave={e=>{e.currentTarget.style.background="#f8f9fc";e.currentTarget.style.color=MUT;e.currentTarget.style.borderColor=BD;}}>
+            <span style={{display:"flex"}}>{IC.building}</span> Portail fournisseurs ↗
+          </a>
+
           {/* Quick deposit */}
           <button onClick={()=>setView("depot")} style={btn("primary",true)}>
             <span style={{display:"flex"}}>{IC.upload}</span> Déposer
