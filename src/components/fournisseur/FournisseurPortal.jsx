@@ -8,6 +8,17 @@ const P    = "#324372";
 const P2   = "#253359";
 const PL   = "#4a6ab0";
 const PXL  = "#eef2fb";
+
+/* Read champsDyn from AppContext via localStorage snapshot */
+const LS_CHAMPS_DYN = "softdocs_champs_dyn";
+function getChampsDyn(){
+  try{
+    const raw=localStorage.getItem(LS_CHAMPS_DYN);
+    if(raw)return JSON.parse(raw);
+  }catch{}
+  // Fallback defaults if no localStorage snapshot
+  return [];
+}
 const PXX  = "#f5f7fd";
 const ACC  = "#1ecad3";   /* teal accent */
 const WH   = "#ffffff";
@@ -460,7 +471,10 @@ function UploadScreen({ account, onSubmit }) {
   const [notes, setNotes]       = useState("");
   const [submitting, setSub]    = useState(false);
   const [fieldErr, setFieldErr] = useState({});
+  const [dynVals,  setDynVals]  = useState({});
+  const [champsDyn]             = useState(()=>getChampsDyn().filter(c=>c.visFourn));
   const fileRef = useRef();
+  const setDyn = (id,v)=>setDynVals(p=>({...p,[id]:v}));
 
   /* OCR scan ticker */
   useEffect(() => {
@@ -551,6 +565,7 @@ function UploadScreen({ account, onSubmit }) {
           score:    fields.score || 0,
         },
         anx:    [],
+        champsDyn: dynVals,
         etapes: [
           { label: "Réception & Contrôle",   v: ["U004", "U006"], statut: "EN ATTENTE", date: "", comment: "", validBy: "" },
           { label: "Validation Technique",   v: ["U001"],         statut: "EN ATTENTE", date: "", comment: "", validBy: "" },
@@ -865,6 +880,30 @@ function UploadScreen({ account, onSubmit }) {
         </div>
       </div>
 
+      {/* Dynamic global fields (visFourn) */}
+      {champsDyn.length > 0 && (
+        <div style={{ ...card(), padding: 20, marginBottom: 14 }}>
+          <div style={{ fontSize: 11.5, fontWeight: 800, color: MUT, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ display: "flex" }}>{Ic.edit}</span> Champs complémentaires
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            {champsDyn.map(ch => (
+              <div key={ch.id} style={{ gridColumn: (ch.type==="texte"||ch.type==="fichier") ? "span 2" : "span 1" }}>
+                <label style={{ fontSize: 11.5, fontWeight: 700, color: "#4a5568", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 5, display: "block" }}>
+                  {ch.etiquette}{ch.requis ? " *" : ""}
+                </label>
+                {ch.type==="texte" && <input value={dynVals[ch.id]||""} onChange={e=>setDyn(ch.id,e.target.value)} style={{...inp(),width:"100%",boxSizing:"border-box"}} required={ch.requis}/>}
+                {ch.type==="date" && <input type="date" value={dynVals[ch.id]||""} onChange={e=>setDyn(ch.id,e.target.value)} style={{...inp(),width:"100%"}} required={ch.requis}/>}
+                {ch.type==="case" && <label style={{display:"flex",gap:8,alignItems:"center",marginTop:6,cursor:"pointer"}}><input type="checkbox" checked={!!dynVals[ch.id]} onChange={e=>setDyn(ch.id,e.target.checked)}/><span style={{fontSize:13}}>{ch.etiquette}</span></label>}
+                {ch.type==="liste" && <select value={dynVals[ch.id]||""} onChange={e=>setDyn(ch.id,e.target.value)} style={{...inp(),width:"100%"}}><option value="">— Sélectionner —</option>{(ch.items||[]).map(it=><option key={it}>{it}</option>)}</select>}
+                {ch.type==="radio" && <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:4}}>{(ch.items||[]).map(it=><label key={it} style={{display:"flex",gap:6,alignItems:"center",fontSize:13,cursor:"pointer"}}><input type="radio" name={`dyn_${ch.id}`} value={it} checked={dynVals[ch.id]===it} onChange={()=>setDyn(ch.id,it)}/>{it}</label>)}</div>}
+                {ch.type==="fichier" && <input type="file" onChange={e=>setDyn(ch.id,e.target.files[0]?.name||"")} style={{...inp(),padding:"8px 12px",width:"100%"}} required={ch.requis}/>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Notes */}
       <div style={{ marginBottom: 20 }}>
         <label style={{ fontSize: 12, fontWeight: 700, color: "#4a5568", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 6, display: "block" }}>
@@ -1026,7 +1065,7 @@ function SuccessScreen({ doc, account, onNewDoc, onLogout }) {
 /* ═══════════════════════════════════════════════════════════
    MAIN PORTAL SHELL
 ═══════════════════════════════════════════════════════════ */
-export default function FournisseurPortal() {
+export function FournisseurPortal({ onBack }) {
   const [screen, setScreen]   = useState("auth");    // "auth" | "upload" | "success"
   const [account, setAccount] = useState(null);
   const [lastDoc, setLastDoc] = useState(null);

@@ -163,6 +163,7 @@ export function DocDetail({doc,onBack,onUpdate,ctx}){
               {doc.etapes?.map((e,i)=>{
                 const sc=STEP_COL[e.statut]||STEP_COL["EN ATTENTE"];
                 const si=STEP_IC[e.statut]||IC.clock;
+                const isNext=e===nextEtape;
                 return(
                   <div key={i} style={{display:"flex",gap:14,marginBottom:12}}>
                     <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
@@ -172,23 +173,42 @@ export function DocDetail({doc,onBack,onUpdate,ctx}){
                       {i<doc.etapes.length-1&&<div style={{width:2,flex:1,minHeight:12,background:BD,margin:"4px 0"}}/>}
                     </div>
                     <div style={{flex:1,paddingBottom:8}}>
-                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
                         <span style={{fontSize:13,fontWeight:600,color:"#212529"}}>{e.label}</span>
                         <Badge s={e.statut} sm/>
+                        {e.duree&&<span style={{fontSize:10,color:MUT,display:"flex",alignItems:"center",gap:3}}><span style={{display:"flex"}}>{IC.clock}</span>{e.duree}h</span>}
                       </div>
                       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:4}}>
                         {e.v?.map(uid=><Avatar key={uid} uid={uid} users={users} size={24}/>)}
                       </div>
                       {e.date&&(
-                        <div style={{fontSize:11,color:MUT,display:"flex",alignItems:"center",gap:4}}>
-                          <span style={{display:"flex"}}>{IC.calendar}</span>
-                          {e.date}
+                        <div style={{fontSize:11,color:MUT,display:"flex",alignItems:"center",gap:4,marginBottom:4}}>
+                          <span style={{display:"flex"}}>{IC.calendar}</span>{e.date}
                           {e.validBy&&<><span style={{margin:"0 4px"}}>·</span><Avatar uid={e.validBy} users={users} size={18}/></>}
                         </div>
                       )}
-                      {e.comment&&(
-                        <div style={{fontSize:12,color:"#495057",marginTop:4,background:"#f8f9fc",padding:"6px 10px",borderRadius:RSm}}>
-                          {e.comment}
+                      {e.comment&&<div style={{fontSize:12,color:"#495057",background:"#f8f9fc",padding:"6px 10px",borderRadius:RSm,marginBottom:6}}>{e.comment}</div>}
+                      {/* Checklists */}
+                      {e.checklists?.length>0&&(
+                        <div style={{border:`1px solid ${BD}`,borderRadius:RSm,overflow:"hidden",marginTop:4}}>
+                          <div style={{fontSize:10.5,fontWeight:700,color:MUT,textTransform:"uppercase",letterSpacing:".06em",padding:"5px 10px",background:"#f8f9fc",borderBottom:`1px solid ${BD}`}}>
+                            Checklists · {e.checklists.filter(c=>c.checked).length}/{e.checklists.length} validés
+                          </div>
+                          {e.checklists.map((cl,ci)=>(
+                            <div key={ci} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",borderBottom:ci<e.checklists.length-1?`1px solid ${BD}`:"none",background:cl.checked?"#f0faf4":"#fff"}}>
+                              <input type="checkbox" checked={!!cl.checked}
+                                onChange={ev=>{
+                                  if(!isNext&&e.statut!=="EN ATTENTE"&&e.statut!=="EN RETARD")return;
+                                  const ne=doc.etapes.map((x,xi)=>xi===i?{...x,checklists:x.checklists.map((c,ci2)=>ci2===ci?{...c,checked:ev.target.checked}:c)}:x);
+                                  onUpdate({...doc,etapes:ne});
+                                }}
+                                disabled={e.statut==="VALIDÉ"||e.statut==="REJETÉ"}
+                                style={{cursor:e.statut==="VALIDÉ"||e.statut==="REJETÉ"?"not-allowed":"pointer"}}/>
+                              <span style={{fontSize:12,fontWeight:600,color:MUT,minWidth:24}}>{cl.code}</span>
+                              <span style={{fontSize:12.5,flex:1,color:cl.checked?"#1a6e3c":"#495057",textDecoration:cl.checked?"none":"none"}}>{cl.label}</span>
+                              {cl.checked&&<span style={{display:"flex",color:"#28a745",flexShrink:0}}>{IC.check}</span>}
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>

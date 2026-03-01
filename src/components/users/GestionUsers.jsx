@@ -1,6 +1,7 @@
 "use client";
-import{useState}from"react";
+import{useState,useRef}from"react";
 import{Modal}from"../ui/Modal";
+import{ExportButtons}from"../ui/ExportButtons";
 import{IC}from"../ui/Icons";
 import{card,btn,inp,lbl,bdg,TH,TD,P,BD,MUT,SUCL,SUCD,RSm,TR}from"../../lib/theme";
 import{PROJETS,ALL_SITES,DROITS_DEF}from"../../lib/data";
@@ -10,6 +11,7 @@ export default function GestionUsers(){
   const{users,setUsers}=useApp();
   const[modal,setModal]=useState(null);
   const[edit,setEdit]=useState({});
+  const tableRef=useRef(null);
 
   function openEdit(u){setEdit(JSON.parse(JSON.stringify(u)));setModal("edit");}
   function save(){setUsers(p=>p.map(u=>u.id===edit.id?edit:u));setModal(null);}
@@ -26,16 +28,21 @@ export default function GestionUsers(){
     <div style={{animation:"fadeIn .2s ease"}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
         <h2 style={{fontSize:17,fontWeight:700,color:"#212529"}}>Utilisateurs & Droits</h2>
-        <button style={btn("primary",true)}>
-          <span style={{display:"flex"}}>{IC.plus}</span> Nouvel utilisateur
-        </button>
+        <div style={{display:"flex",gap:8}}>
+          <ExportButtons filename="utilisateurs" title="Utilisateurs & Droits" tableRef={tableRef}
+            headers={["ID","Nom","Rôle","Site","Actif"]}
+            rows={users.map(u=>[u.id,u.nom,u.role,u.site,u.actif?"Oui":"Non"])}/>
+          <button style={btn("primary",true)}>
+            <span style={{display:"flex"}}>{IC.plus}</span> Nouvel utilisateur
+          </button>
+        </div>
       </div>
 
       <div style={{...card()}}>
         <div style={{overflowX:"auto"}}>
-          <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <table ref={tableRef} style={{width:"100%",borderCollapse:"collapse"}}>
             <thead>
-              <tr>{["Utilisateur","Rôle","Site","Projets","Droits actifs","Statut",""].map(h=><th key={h} style={TH}>{h}</th>)}</tr>
+              <tr>{["Utilisateur","Email","Rôle","Site","Projets","Droits actifs","Statut",""].map(h=><th key={h} style={TH}>{h}</th>)}</tr>
             </thead>
             <tbody>
               {users.map(u=>(
@@ -51,6 +58,7 @@ export default function GestionUsers(){
                       </div>
                     </div>
                   </td>
+                  <td style={{...TD,fontSize:12,color:MUT}}>{u.email||"—"}</td>
                   <td style={{...TD,fontSize:12,color:"#495057"}}>{u.role}</td>
                   <td style={TD}><span style={{fontSize:11,background:"#eef1f8",color:P,padding:"2px 8px",borderRadius:3}}>{u.site}</span></td>
                   <td style={TD}>
@@ -96,8 +104,11 @@ export default function GestionUsers(){
             </button>
           </>}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
-            <div><label style={lbl}>Nom</label><input value={edit.nom||""} onChange={e=>setEdit(p=>({...p,nom:e.target.value}))} style={inp()}/></div>
-            <div><label style={lbl}>Rôle</label><input value={edit.role||""} onChange={e=>setEdit(p=>({...p,role:e.target.value}))} style={inp()}/></div>
+            <div style={{gridColumn:"span 2"}}><label style={lbl}>Nom complet *</label><input value={edit.nom||""} onChange={e=>setEdit(p=>({...p,nom:e.target.value}))} placeholder="Ex: Rakoto Jean-Baptiste" style={inp()}/></div>
+            <div><label style={lbl}>Email *</label><input type="email" value={edit.email||""} onChange={e=>setEdit(p=>({...p,email:e.target.value}))} placeholder="nom@softdocs.mg" style={inp()}/></div>
+            <div><label style={lbl}>Mot de passe</label><input type="password" value={edit.password||""} onChange={e=>setEdit(p=>({...p,password:e.target.value}))} placeholder="Laisser vide pour ne pas modifier" style={inp()}/></div>
+            <div><label style={lbl}>Rôle</label><input value={edit.role||""} onChange={e=>setEdit(p=>({...p,role:e.target.value}))} placeholder="Ex: Chef de Projet" style={inp()}/></div>
+            <div><label style={lbl}>Initiales</label><input value={edit.init||""} onChange={e=>setEdit(p=>({...p,init:e.target.value}))} placeholder="Ex: RJ" maxLength={3} style={inp()}/></div>
             <div><label style={lbl}>Site principal</label>
               <select value={edit.site||""} onChange={e=>setEdit(p=>({...p,site:e.target.value}))} style={inp()}>
                 {ALL_SITES.map(s=><option key={s}>{s}</option>)}

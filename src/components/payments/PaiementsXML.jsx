@@ -1,8 +1,9 @@
 "use client";
-import{useState}from"react";
+import{useState,useRef}from"react";
 import{Modal}from"../ui/Modal";
 import{IC}from"../ui/Icons";
 import{Badge}from"../ui/Badge";
+import{ExportButtons}from"../ui/ExportButtons";
 import{card,btn,inp,sel,lbl,bdg,TH,TD,P,WH,BD,BG,MUT,SUC,SUCL,SUCD,DNG,RSm}from"../../lib/theme";
 import{XML_NATURES}from"../../lib/data";
 import{fmtN,now}from"../../lib/utils";
@@ -14,6 +15,7 @@ export default function PaiementsXML(){
   const[selSchema,setSelSchema]=useState(schemas[0]?.id||"");
   const[editSchema,setEditSchema]=useState(null);
   const[selected,setSelected]=useState([]);
+  const tableRef=useRef(null);
 
   const eligible=docs.filter(d=>d.bap&&d.st==="BON À PAYER");
   const schema=schemas.find(s=>s.id===selSchema)||schemas[0];
@@ -34,6 +36,9 @@ export default function PaiementsXML(){
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
         <h2 style={{fontSize:17,fontWeight:700,color:"#212529"}}>Paiements XML</h2>
         <div style={{display:"flex",gap:8}}>
+          <ExportButtons filename="paiements_xml" title="Paiements XML" tableRef={tableRef}
+            headers={["ID","Fournisseur","Montant","Statut","Date"]}
+            rows={docs.filter(d=>d.bap||d.st==="BON À PAYER").map(d=>[d.id,d.fourn,d.mtR,d.st,d.date])}/>
           <select value={selSchema} onChange={e=>setSelSchema(e.target.value)} style={{...inp({width:"auto",fontSize:13})}}>
             {schemas.map(s=><option key={s.id} value={s.id}>{s.nom}</option>)}
           </select>

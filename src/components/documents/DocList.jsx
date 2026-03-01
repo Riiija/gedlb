@@ -1,7 +1,8 @@
 "use client";
-import{useState}from"react";
+import{useState,useRef}from"react";
 import{IC}from"../ui/Icons";
 import{Badge}from"../ui/Badge";
+import{ExportButtons}from"../ui/ExportButtons";
 import{card,btn,inp,TH,TD,P,BD,MUT,WH}from"../../lib/theme";
 import{fmtN}from"../../lib/utils";
 import{useApp}from"../../context/AppContext";
@@ -15,6 +16,7 @@ export function DocList({title,iconKey="file",docs,onSel}){
   const[q,setQ]=useState("");
   const[statusF,setStatusF]=useState("");
   const[siteF,setSiteF]=useState("");
+  const tableRef=useRef(null);
   const{types}=useApp();
 
   const filtered=docs.filter(d=>{
@@ -39,9 +41,13 @@ export function DocList({title,iconKey="file",docs,onSel}){
               <div style={{fontSize:12,color:MUT}}>{filtered.length} document{filtered.length!==1?"s":""}</div>
             </div>
           </div>
-          <button style={btn("light",true)}>
-            <span style={{display:"flex"}}>{IC.dl}</span> Exporter
-          </button>
+          <ExportButtons
+            filename={title.toLowerCase().replace(/\s/g,"_")}
+            title={title}
+            tableRef={tableRef}
+            headers={["ID","Type","Fournisseur","Projet","Site","Montant","Statut","Date","OCR%"]}
+            rows={filtered.map(d=>[d.id,d.type,d.fourn||"",d.proj||"",d.site||"",d.mt,d.st,d.date,d.ocr+"%"])}
+          />
         </div>
 
         {/* Filters */}
@@ -68,7 +74,7 @@ export function DocList({title,iconKey="file",docs,onSel}){
 
         {/* Table */}
         <div style={{overflowX:"auto"}}>
-          <table style={{width:"100%",borderCollapse:"collapse"}}>
+          <table ref={tableRef} style={{width:"100%",borderCollapse:"collapse"}}>
             <thead>
               <tr>{["Référence","Type","Fournisseur","Site","Montant","Statut","OCR","Date"].map(h=><th key={h} style={TH}>{h}</th>)}</tr>
             </thead>
