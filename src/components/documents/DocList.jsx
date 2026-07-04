@@ -16,6 +16,8 @@ export function DocList({title,iconKey="file",docs,onSel}){
   const[q,setQ]=useState("");
   const[statusF,setStatusF]=useState("");
   const[siteF,setSiteF]=useState("");
+  const[typeF,setTypeF]=useState([]); // multi-select checkbox dropdown
+  const[typeDropOpen,setTypeDropOpen]=useState(false);
   const tableRef=useRef(null);
   const{types}=useApp();
 
@@ -23,7 +25,8 @@ export function DocList({title,iconKey="file",docs,onSel}){
     const sq=q.toLowerCase();
     return(!q||(d.id.toLowerCase().includes(sq)||(d.fourn||"").toLowerCase().includes(sq)||d.type.toLowerCase().includes(sq)||(d.site||"").toLowerCase().includes(sq)))
       &&(!statusF||d.st===statusF)
-      &&(!siteF||d.site===siteF);
+      &&(!siteF||d.site===siteF)
+      &&(typeF.length===0||typeF.includes(d.type));
   });
 
   const statuses=[...new Set(docs.map(d=>d.st))];
@@ -57,16 +60,43 @@ export function DocList({title,iconKey="file",docs,onSel}){
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Référence, fournisseur, site…"
               style={{...inp({paddingLeft:32,fontSize:13})}}/>
           </div>
-          <select value={statusF} onChange={e=>setStatusF(e.target.value)} style={{...inp({width:"auto",fontSize:13,minWidth:160})}}>
+          {/* Type checkbox dropdown */}
+          <div style={{position:"relative"}}>
+            <button onClick={()=>setTypeDropOpen(p=>!p)}
+              style={{...inp({width:"auto",fontSize:13,minWidth:160,display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,cursor:"pointer",userSelect:"none",padding:"0 12px"}),height:36}}>
+              <span>{typeF.length>0?`Types (${typeF.length})`:"Tous types"}</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points={typeDropOpen?"18 15 12 9 6 15":"6 9 12 15 18 9"}/></svg>
+            </button>
+            {typeDropOpen&&(
+              <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,zIndex:999,background:"#fff",border:"1px solid #dee2e6",borderRadius:8,boxShadow:"0 8px 24px rgba(0,0,0,.12)",minWidth:220,maxHeight:280,overflowY:"auto",padding:"6px 0"}}>
+                <div style={{display:"flex",justifyContent:"space-between",padding:"4px 12px 8px",borderBottom:"1px solid #f0f0f0",marginBottom:4}}>
+                  <span style={{fontSize:11,fontWeight:700,color:"#6c757d",textTransform:"uppercase"}}>Filtrer par type</span>
+                  {typeF.length>0&&<button onClick={()=>setTypeF([])} style={{fontSize:11,color:"#1ecad3",background:"none",border:"none",cursor:"pointer",padding:0}}>Tout effacer</button>}
+                </div>
+                {[...new Set(docs.map(d=>d.type).filter(Boolean))].map(typ=>{
+                  const checked=typeF.includes(typ);
+                  return(
+                    <label key={typ} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 14px",cursor:"pointer",background:checked?"#f0f4ff":"transparent",transition:"background .1s"}}
+                      onMouseEnter={e=>{if(!checked)e.currentTarget.style.background="#f8f9fc";}}
+                      onMouseLeave={e=>{if(!checked)e.currentTarget.style.background="transparent";}}>
+                      <input type="checkbox" checked={checked} onChange={()=>setTypeF(p=>checked?p.filter(x=>x!==typ):[...p,typ])} style={{accentColor:"#1ecad3",width:14,height:14}}/>
+                      <span style={{fontSize:13,color:"#212529",fontWeight:checked?600:400}}>{typ}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <select value={statusF} onChange={e=>setStatusF(e.target.value)} style={{...inp({width:"auto",fontSize:13,minWidth:150})}}>
             <option value="">Tous statuts</option>
             {statuses.map(s=><option key={s}>{s}</option>)}
           </select>
-          <select value={siteF} onChange={e=>setSiteF(e.target.value)} style={{...inp({width:"auto",fontSize:13,minWidth:150})}}>
+          <select value={siteF} onChange={e=>setSiteF(e.target.value)} style={{...inp({width:"auto",fontSize:13,minWidth:140})}}>
             <option value="">Tous sites</option>
             {sites.map(s=><option key={s}>{s}</option>)}
           </select>
-          {(q||statusF||siteF)&&(
-            <button onClick={()=>{setQ("");setStatusF("");setSiteF("");}} style={btn("light",true)}>
+          {(q||statusF||siteF||typeF.length>0)&&(
+            <button onClick={()=>{setQ("");setStatusF("");setSiteF("");setTypeF([]);setTypeDropOpen(false);}} style={btn("light",true)}>
               <span style={{display:"flex"}}>{IC.x}</span> Effacer
             </button>
           )}

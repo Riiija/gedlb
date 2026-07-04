@@ -211,7 +211,7 @@ export default function GestionPermissions(){
 
       {/* Table */}
       <div style={{...card(),overflow:"hidden"}}>
-        <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+        <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}><table style={{width:"100%",minWidth:600,borderCollapse:"collapse",fontSize:12}}>
           <thead>
             <tr>
               {["Utilisateur","Rôle","Dépôt","Confidentiel","Liquidation","Stats","Paramétrage",""].map(h=>(
@@ -229,7 +229,7 @@ export default function GestionPermissions(){
               <tr><td colSpan={8} style={{...TD,textAlign:"center",color:MUT,padding:32}}>Aucun utilisateur</td></tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {editUser&&(

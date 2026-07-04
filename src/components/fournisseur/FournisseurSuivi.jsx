@@ -84,7 +84,7 @@ export function FournisseurSuivi({ onBack, lang = "fr" }) {
           style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.2)", color: WH, borderRadius: 8, padding: "6px 14px", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
           ← Retour
         </button>
-        <img src="/softdocs-logo.png" alt="SoftDocs" style={{ height: 26, filter: "brightness(0) invert(1)" }} />
+        <img src="/softdocs-logo-final.png" alt="SoftDocs" style={{ height: 34, filter: "brightness(0) invert(1) drop-shadow(0 1px 4px rgba(255,255,255,.2))" }} />
         <span style={{ color: WH, fontWeight: 700, fontSize: 14, flex: 1 }}>{selDoc.id} — {selDoc.type}</span>
         <DocBadge st={selDoc.st} />
       </div>
@@ -92,7 +92,7 @@ export function FournisseurSuivi({ onBack, lang = "fr" }) {
       <div style={{ maxWidth: 760, margin: "28px auto", padding: "0 20px" }}>
         <div style={{ background: WH, borderRadius: 12, border: `1px solid ${BD}`, padding: 22, marginBottom: 16, boxShadow: "0 2px 12px rgba(50,67,114,.07)" }}>
           <div style={{ fontSize: 11.5, fontWeight: 700, color: MUT, textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 14 }}>Informations du document</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"1fr 1fr", gap: 10 }}>
             {[
               ["Référence", selDoc.id], ["Type", selDoc.type],
               ["Fournisseur", selDoc.fourn || selDoc._fourn?.nom || "—"],
@@ -152,7 +152,7 @@ export function FournisseurSuivi({ onBack, lang = "fr" }) {
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 36, height: 36, borderRadius: 8, background: WH, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <img src="/softdocs-logo.png" alt="SoftDocs" style={{ width: 28, objectFit: "contain" }} />
+              <img src="/softdocs-logo-final.png" alt="SoftDocs" style={{ width: 34, objectFit: "contain", filter: "brightness(0) invert(1)" }} />
             </div>
             <div>
               <div style={{ color: WH, fontWeight: 800, fontSize: 14.5 }}>SoftDocs</div>

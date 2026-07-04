@@ -1,0 +1,6 @@
+2026/06/13-19:36:49.812 9c94 Reusing MANIFEST D:\git\gedlb\.codex-edge-softsign-doc-profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/06/13-19:36:49.814 9c94 Recovering log #10
+2026/06/13-19:36:49.816 9c94 Reusing old log D:\git\gedlb\.codex-edge-softsign-doc-profile\Default\EdgeCoupons/coupons_data.db/000010.log 
+2026/06/13-19:36:50.036 2480 Level-0 table #14: started
+2026/06/13-19:36:50.045 2480 Level-0 table #14: 682840 bytes OK
+2026/06/13-19:36:50.048 2480 Delete type=0 #10

@@ -20,7 +20,7 @@ export function SuiviDoc(){
   }
 
   return(
-    <div style={{maxWidth:700,margin:"0 auto",animation:"fadeIn .2s ease"}}>
+    <div style={{maxWidth:typeof window!=="undefined"&&window.innerWidth<=768?"95%":700,margin:"0 auto",animation:"fadeIn .2s ease"}}>
       <h2 style={{fontSize:18,fontWeight:700,color:"#212529",marginBottom:20}}>Suivi de document</h2>
 
       {/* Search */}
@@ -68,7 +68,7 @@ export function SuiviDoc(){
                 })}
               </div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            <div style={{display:"grid",gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"1fr 1fr 1fr",gap:10}}>
               <div style={{background:"#f8f9fc",borderRadius:RSm,padding:"10px 12px"}}>
                 <div style={{fontSize:10,color:MUT,textTransform:"uppercase",fontWeight:600,marginBottom:3}}>Montant</div>
                 <div style={{fontSize:14,fontWeight:700,color:"#212529"}}>{fmtN(result.mtR)}</div>

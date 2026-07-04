@@ -1,0 +1,5 @@
+2026/06/13-20:41:35.739 1b68 Creating DB D:\git\gedlb\.codex-edge-softpaiement-doc-profile\Default\EdgeCoupons/coupons_data.db since it was missing.
+2026/06/13-20:41:35.760 1b68 Reusing MANIFEST D:\git\gedlb\.codex-edge-softpaiement-doc-profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/06/13-20:41:36.628 9784 Level-0 table #5: started
+2026/06/13-20:41:36.636 9784 Level-0 table #5: 682669 bytes OK
+2026/06/13-20:41:36.641 9784 Delete type=0 #3

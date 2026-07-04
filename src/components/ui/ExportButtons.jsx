@@ -31,7 +31,7 @@ function printToPDF(title, tableHTML) {
       .footer{margin-top:20px;font-size:10px;color:#6c757d;text-align:right}
     </style>
   </head><body>
-    <img src="/softdocs-logo.png" height="36" style="margin-bottom:12px"/>
+    <img src="/softdocs-logo-final.png" height="36" style="margin-bottom:12px"/>
     <h2>${title}</h2>
     ${tableHTML}
     <div class="footer">SoftDocs · Exporté le ${new Date().toLocaleDateString("fr-MG")} à ${new Date().toLocaleTimeString("fr-MG",{hour:"2-digit",minute:"2-digit"})}</div>

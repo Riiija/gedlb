@@ -1,0 +1,41 @@
+
+> softdocs@1.0.0 dev
+> next dev -p 3001
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 3.1s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 2.2s (456 modules)
+ GET /login 200 in 3072ms
+ ○ Compiling /backoffice ...
+ ✓ Compiled /backoffice in 17.9s (5678 modules)
+ GET /backoffice 200 in 1228ms
+ ✓ Compiled in 6.8s (5676 modules)
+ GET /backoffice 200 in 1691ms
+ ✓ Compiled in 1781ms (5676 modules)
+ GET /backoffice 200 in 728ms
+ GET /backoffice 200 in 62ms
+ ✓ Compiled in 2.7s (5676 modules)
+ ✓ Compiled in 3.4s (5680 modules)
+ ✓ Compiled in 1843ms (5680 modules)
+ ✓ Compiled in 1249ms (5680 modules)
+ ✓ Compiled in 2.4s (5680 modules)
+ ✓ Compiled in 4.2s (5680 modules)
+ ✓ Compiled in 2.9s (5680 modules)
+ GET /backoffice 200 in 626ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.7s (5693 modules)
+ GET / 200 in 3082ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1258ms (5696 modules)
+ GET /_next/static/css/app/layout.css?v=1781439172533 404 in 1503ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 1482ms
+ GET /_next/static/chunks/main-app.js?v=1781439172533 404 in 1481ms
+ GET / 200 in 126ms
+ GET /_next/static/css/app/layout.css?v=1781439184585 404 in 83ms
+ GET /_next/static/chunks/main-app.js?v=1781439184585 404 in 93ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 93ms

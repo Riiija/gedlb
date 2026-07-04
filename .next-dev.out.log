@@ -1,0 +1,13 @@
+  ▲ Next.js 14.2.5
+  - Local:        http://127.0.0.1:3001
+  - Network:      http://127.0.0.1:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.5s
+ ○ Compiling /fournisseur ...
+ ✓ Compiled /fournisseur in 5s (480 modules)
+ GET /fournisseur 200 in 5765ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 785ms (469 modules)
+ GET /fournisseur 404 in 1174ms

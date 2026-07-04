@@ -1,11 +1,3 @@
-"use client";
-import { AppProvider } from "../context/AppContext";
-import { AppShell } from "../components/layout/AppShell";
-
-export default function Home() {
-  return (
-    <AppProvider>
-      <AppShell />
-    </AppProvider>
-  );
-}
+import FournisseurLanding from "../components/fournisseur/FournisseurLanding";
+export const metadata = { title: "SoftDocs — Portail Fournisseurs" };
+export default function Home() { return <FournisseurLanding />; }

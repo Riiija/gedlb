@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next *)",
+      "Bash(Get-ChildItem -Path \"d:\\\\git\\\\gedlb\\\\src\" -Recurse -Filter \"*user*\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npm run *)",
+      "Bash(grep -n '\\\\${WH}\\\\|`${BD}\\\\|`${MUT}\\\\|`${BG}' \"d:/git/gedlb/src/components/softsign/SSOperational.jsx\")"
+    ]
+  }
+}

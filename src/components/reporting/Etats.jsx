@@ -123,7 +123,7 @@ function R1({ docs, tableRef }) {
   const kpiTotal = docs.length;
   const kpiTraites = docs.filter(d => ["VALIDÉ","PAYÉ","BON À PAYER","CLÔTURÉ","ARCHIVÉ"].includes(d.st)).length;
   return <>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:16 }}>
+    <div style={{ display:"grid", gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"repeat(3,1fr)", gap:12, marginBottom:16 }}>
       <KPI label="Total dossiers" val={kpiTotal} color={P} icon={IC.file} />
       <KPI label="Traités" val={kpiTraites} color="#28a745" icon={IC.checkCircle} sub={`${kpiTotal>0?((kpiTraites/kpiTotal)*100).toFixed(0):0}% du total`} />
       <KPI label="En attente" val={kpiTotal-kpiTraites} color="#e07d00" icon={IC.clock} />
@@ -150,7 +150,7 @@ function R3({ docs, users, tableRef }) {
       <span style={{color:retards.length>0?"#dc3545":"#28a745",fontWeight:700}}>{retards.length>0?"🔴 "+retards.length+" en retard":"🟢 OK"}</span>];
   }).filter(Boolean);
   return <>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:12, marginBottom:16 }}>
+    <div style={{ display:"grid", gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"repeat(2,1fr)", gap:12, marginBottom:16 }}>
       <KPI label="Total en instance" val={enCours.length} color="#e07d00" icon={IC.clock} />
       <KPI label="En retard" val={docs.filter(d=>d.st==="EN RETARD").length} color="#dc3545" icon={IC.alertTri} />
     </div>
@@ -247,7 +247,7 @@ function R9({ docs, tableRef }) {
       pR.length>0?<span style={{color:"#dc3545",fontWeight:700}}>⚠</span>:"🟢"];
   }).filter(Boolean);
   return <>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:16 }}>
+    <div style={{ display:"grid", gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"repeat(3,1fr)", gap:12, marginBottom:16 }}>
       <KPI label="Total rejetés" val={rejetes.length} color="#dc3545" icon={IC.xCircle} />
       <KPI label="Taux de rejet" val={`${tx}%`} color="#e07d00" icon={IC.alertTri} sub={`Sur ${docs.length} dossiers`} />
       <KPI label="Par type" val={[...new Set(rejetes.map(d=>d.type))].length+" type(s)"} color={P} icon={IC.fileText} />
@@ -284,7 +284,7 @@ function R11({ docs, users, tableRef }) {
     ];
   }).filter(Boolean).sort((a,b)=>(b[3]-a[3]));
   return <>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:16 }}>
+    <div style={{ display:"grid", gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"repeat(3,1fr)", gap:12, marginBottom:16 }}>
       <KPI label="Total validés" val={valides.length} color="#28a745" icon={IC.checkCircle} />
       <KPI label="Valideurs actifs" val={rows.length} color={P} icon={IC.users} />
       <KPI label="Montant validé" val={fmtN(valides.reduce((s,d)=>s+(d.mt||0),0))} color="#2d6a4f" icon={IC.money} sub="Total" />
@@ -292,6 +292,183 @@ function R11({ docs, users, tableRef }) {
     <EtatTable tableRef={tableRef} cols={["Utilisateur","Rôle","Site","Nb validés","Activité","Montant validé","Part totale"]} rows={rows} emptyMsg="Aucune validation" />
   </>;
 }
+
+
+/* ══════════════════════════════════════════════
+   R12 — Situation financière par projets
+══════════════════════════════════════════════ */
+function R12({ docs, tableRef }) {
+  const PRJS = [...new Set(docs.map(d => d.proj).filter(Boolean))].sort();
+  const SITES_BY_PROJ = {};
+  PRJS.forEach(p => {
+    SITES_BY_PROJ[p] = [...new Set(docs.filter(d => d.proj === p).map(d => d.site).filter(Boolean))].sort();
+  });
+
+  function getMt(p, s, filter) {
+    return docs.filter(d => d.proj === p && d.site === s && filter(d)).reduce((sum, d) => sum + (d.mtR || d.mt || 0), 0);
+  }
+  function getTotalMt(filter) {
+    return docs.filter(filter).reduce((sum, d) => sum + (d.mtR || d.mt || 0), 0);
+  }
+
+  /* Word-style table constants */
+  const TBL = { width:"100%", borderCollapse:"collapse", border:"2px solid #000", fontSize:12, fontFamily:"'Segoe UI','Calibri',Arial,sans-serif" };
+  const TH_C = { border:"1px solid #000", padding:"7px 10px", background:"#d9d9d9", fontWeight:700, textAlign:"center", textTransform:"uppercase", fontSize:11, letterSpacing:".03em", verticalAlign:"middle" };
+  const TH_L = { ...TH_C, textAlign:"left" };
+  const TD_L = { border:"1px solid #000", padding:"7px 10px", textAlign:"left", verticalAlign:"middle", fontWeight:600 };
+  const TD_R = { border:"1px solid #000", padding:"7px 10px", textAlign:"right", verticalAlign:"middle" };
+  const TD_TOTAL_L = { ...TD_L, background:"#f2f2f2", fontWeight:800, textTransform:"uppercase" };
+  const TD_TOTAL_R = { ...TD_R, background:"#f2f2f2", fontWeight:800 };
+
+  return (
+    <div style={{ ...card(), padding:20 }}>
+      <div style={{ overflowX:"auto" }}>
+        <table ref={tableRef} style={TBL}>
+          <thead>
+            <tr>
+              <th style={{ ...TH_L, width:"18%" }}>Projet</th>
+              <th style={{ ...TH_L, width:"18%" }}>Site</th>
+              <th style={TH_C}>Montant document<br/>reçu</th>
+              <th style={TH_C}>Montant document<br/>en cours</th>
+              <th style={TH_C}>Montant documents<br/>refusé</th>
+              <th style={TH_C}>Montant<br/>validé</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PRJS.length === 0 && (
+              <tr><td colSpan={6} style={{ textAlign:"center", padding:"24px", color:MUT, border:"1px solid #000" }}>Aucune donnée disponible</td></tr>
+            )}
+            {PRJS.map((proj) => {
+              const sites = SITES_BY_PROJ[proj] || [];
+              return sites.map((site, si) => (
+                <tr key={proj + site}>
+                  {si === 0 && (
+                    <td rowSpan={sites.length} style={{ ...TD_L, verticalAlign:"middle", borderRight:"2px solid #000" }}>
+                      {proj}
+                    </td>
+                  )}
+                  <td style={TD_L}>{site}</td>
+                  <td style={TD_R}>{getMt(proj, site, () => true) > 0 ? fmtN(getMt(proj, site, () => true)) + " Ar" : ""}</td>
+                  <td style={TD_R}>{getMt(proj, site, d => d.st === "EN VALIDATION") > 0 ? fmtN(getMt(proj, site, d => d.st === "EN VALIDATION")) + " Ar" : ""}</td>
+                  <td style={TD_R}>{getMt(proj, site, d => d.st === "REJETÉ") > 0 ? fmtN(getMt(proj, site, d => d.st === "REJETÉ")) + " Ar" : ""}</td>
+                  <td style={TD_R}>{getMt(proj, site, d => ["VALIDÉ","BON À PAYER","PAYÉ"].includes(d.st)) > 0 ? fmtN(getMt(proj, site, d => ["VALIDÉ","BON À PAYER","PAYÉ"].includes(d.st))) + " Ar" : ""}</td>
+                </tr>
+              ));
+            })}
+            {PRJS.length > 0 && (
+              <tr>
+                <td colSpan={2} style={{ ...TD_TOTAL_L, borderRight:"2px solid #000" }}>Total général</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(() => true))} Ar</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(d => d.st === "EN VALIDATION"))} Ar</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(d => d.st === "REJETÉ"))} Ar</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(d => ["VALIDÉ","BON À PAYER","PAYÉ"].includes(d.st)))} Ar</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   R13 — Situation financière par fournisseurs
+══════════════════════════════════════════════ */
+function R13({ docs, tableRef }) {
+  const FOURNS = [...new Set(docs.map(d => d.fourn).filter(Boolean))].sort();
+
+  function getRows(fourn) {
+    const fDocs = docs.filter(d => d.fourn === fourn);
+    const projets = [...new Set(fDocs.map(d => d.proj).filter(Boolean))].sort();
+    const rows = [];
+    projets.forEach(proj => {
+      const pDocs = fDocs.filter(d => d.proj === proj);
+      const sites = [...new Set(pDocs.map(d => d.site).filter(Boolean))].sort();
+      sites.forEach(site => rows.push({ proj, site }));
+    });
+    return rows;
+  }
+  function getProjRows(fourn, proj, allRows) { return allRows.filter(r => r.proj === proj); }
+
+  function getMt(fourn, proj, site, filter) {
+    return docs.filter(d => d.fourn === fourn && d.proj === proj && d.site === site && filter(d)).reduce((sum, d) => sum + (d.mtR || d.mt || 0), 0);
+  }
+  function getTotalMt(filter) {
+    return docs.filter(filter).reduce((sum, d) => sum + (d.mtR || d.mt || 0), 0);
+  }
+
+  const TBL = { width:"100%", borderCollapse:"collapse", border:"2px solid #000", fontSize:12, fontFamily:"'Segoe UI','Calibri',Arial,sans-serif" };
+  const TH_C = { border:"1px solid #000", padding:"7px 10px", background:"#d9d9d9", fontWeight:700, textAlign:"center", textTransform:"uppercase", fontSize:11, letterSpacing:".03em", verticalAlign:"middle" };
+  const TH_L = { ...TH_C, textAlign:"left" };
+  const TD_L = { border:"1px solid #000", padding:"7px 10px", textAlign:"left", verticalAlign:"middle", fontWeight:600 };
+  const TD_R = { border:"1px solid #000", padding:"7px 10px", textAlign:"right", verticalAlign:"middle" };
+  const TD_TOTAL_L = { ...TD_L, background:"#f2f2f2", fontWeight:800, textTransform:"uppercase" };
+  const TD_TOTAL_R = { ...TD_R, background:"#f2f2f2", fontWeight:800 };
+
+  return (
+    <div style={{ ...card(), padding:20 }}>
+      <div style={{ overflowX:"auto" }}>
+        <table ref={tableRef} style={TBL}>
+          <thead>
+            <tr>
+              <th style={{ ...TH_L, width:"16%" }}>Fournisseurs</th>
+              <th style={{ ...TH_L, width:"15%" }}>Projet</th>
+              <th style={{ ...TH_L, width:"14%" }}>Site</th>
+              <th style={TH_C}>Montant document<br/>reçu</th>
+              <th style={TH_C}>Montant document<br/>en cours</th>
+              <th style={{ ...TH_C }}>Montant documents<br/>refusé</th>
+              <th style={TH_C}>Montant<br/>validé</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FOURNS.length === 0 && (
+              <tr><td colSpan={7} style={{ textAlign:"center", padding:"24px", color:MUT, border:"1px solid #000" }}>Aucune donnée disponible</td></tr>
+            )}
+            {FOURNS.map((fourn) => {
+              const rows = getRows(fourn);
+              if (rows.length === 0) return null;
+              const projets = [...new Set(rows.map(r => r.proj))];
+              return rows.map((row, ri) => {
+                const projRows = getProjRows(fourn, row.proj, rows);
+                const projFirstIdx = rows.findIndex(r => r.proj === row.proj);
+                const isFirstOfProj = rows.indexOf(row) === projFirstIdx;
+                return (
+                  <tr key={fourn + row.proj + row.site}>
+                    {ri === 0 && (
+                      <td rowSpan={rows.length} style={{ ...TD_L, verticalAlign:"middle", borderRight:"2px solid #000" }}>
+                        {fourn}
+                      </td>
+                    )}
+                    {isFirstOfProj && (
+                      <td rowSpan={projRows.length} style={{ ...TD_L, verticalAlign:"middle", borderRight:"1px solid #000" }}>
+                        {row.proj}
+                      </td>
+                    )}
+                    <td style={TD_L}>{row.site}</td>
+                    <td style={TD_R}>{getMt(fourn, row.proj, row.site, () => true) > 0 ? fmtN(getMt(fourn, row.proj, row.site, () => true)) + " Ar" : ""}</td>
+                    <td style={TD_R}>{getMt(fourn, row.proj, row.site, d => d.st === "EN VALIDATION") > 0 ? fmtN(getMt(fourn, row.proj, row.site, d => d.st === "EN VALIDATION")) + " Ar" : ""}</td>
+                    <td style={TD_R}>{getMt(fourn, row.proj, row.site, d => d.st === "REJETÉ") > 0 ? fmtN(getMt(fourn, row.proj, row.site, d => d.st === "REJETÉ")) + " Ar" : ""}</td>
+                    <td style={TD_R}>{getMt(fourn, row.proj, row.site, d => ["VALIDÉ","BON À PAYER","PAYÉ"].includes(d.st)) > 0 ? fmtN(getMt(fourn, row.proj, row.site, d => ["VALIDÉ","BON À PAYER","PAYÉ"].includes(d.st))) + " Ar" : ""}</td>
+                  </tr>
+                );
+              });
+            })}
+            {FOURNS.length > 0 && (
+              <tr>
+                <td colSpan={3} style={{ ...TD_TOTAL_L, borderRight:"2px solid #000" }}>Total général</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(() => true))} Ar</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(d => d.st === "EN VALIDATION"))} Ar</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(d => d.st === "REJETÉ"))} Ar</td>
+                <td style={TD_TOTAL_R}>{fmtN(getTotalMt(d => ["VALIDÉ","BON À PAYER","PAYÉ"].includes(d.st)))} Ar</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 
 /* ══════════════════════════════════════════════
    11 REPORTS CONFIG
@@ -309,6 +486,8 @@ function useReports(t) {
     { id:"r9",  num:9,  label:t.r9Label,  icon:"❌", sub:t.r9Sub },
     { id:"r10", num:10, label:t.r10Label, icon:"🚫", sub:t.r10Sub },
     { id:"r11", num:11, label:t.r11Label, icon:"✅", sub:t.r11Sub },
+    { id:"r12", num:12, label:t.r12Label, icon:"💰", sub:t.r12Sub },
+    { id:"r13", num:13, label:t.r13Label, icon:"🏢", sub:t.r13Sub },
   ];
 }
 
@@ -316,9 +495,10 @@ function useReports(t) {
    MAIN EXPORT
 ══════════════════════════════════════════════ */
 export default function Etats() {
-  const { docs, users, lang } = useApp();
+  const { docs, users, lang, view } = useApp();
   const t = useT(lang);
-  const [active, setActive] = useState("r1");
+  /* Use view directly — sidebar sets view to r1..r11 */
+  const active = ["r1","r2","r3","r4","r5","r6","r7","r8","r9","r10","r11","r12","r13"].includes(view) ? view : "r1";
   const [f, setF] = useState({ proj:"", site:"", exped:"", valideur:"", dateFrom:"", dateTo:"" });
   const tableRef = useRef(null);
 
@@ -332,76 +512,62 @@ export default function Etats() {
   }, [docs, f]);
 
   const REPORTS = useReports(t);
-  const cur = REPORTS.find(r => r.id === active);
+  const cur = REPORTS.find(r => r.id === active) || REPORTS[0];
   const activeFilters = Object.values(f).filter(Boolean).length;
 
+  /* Color & icon map per report */
+  const REPORT_STYLE = {
+    r1:{color:"#2563eb",icon:"barChart"},r2:{color:"#475569",icon:"scroll"},
+    r3:{color:"#7c3aed",icon:"user"},   r4:{color:"#7c3aed",icon:"users"},
+    r5:{color:"#f5a623",icon:"clock"},  r6:{color:"#0fa86c",icon:"refresh"},
+    r7:{color:"#64748b",icon:"archive"},r8:{color:"#e03e3e",icon:"alertTri"},
+    r9:{color:"#e03e3e",icon:"xCircle"},r10:{color:"#b91c1c",icon:"fileText"},
+    r11:{color:"#0fa86c",icon:"checkCircle"},
+    r12:{color:"#1d6f42",icon:"money"},
+    r13:{color:"#0891b2",icon:"money"},
+  };
+  const rs = REPORT_STYLE[active] || {color:"#324372",icon:"barChart"};
+
   return (
-    <div style={{ animation: "fadeIn .2s ease" }}>
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:8 }}>
-        <div>
-          <h2 style={{ fontSize:18, fontWeight:700, color:"#212529", marginBottom:2 }}>{t.etatsTitle}</h2>
-          <p style={{ fontSize:12.5, color:MUT }}>{filtered.length} {t.etatsDesc} • {activeFilters} {t.etatsFiltre}</p>
+    <div style={{ animation:"fadeIn .2s ease" }}>
+      {/* ── Page header ── */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, flexWrap:"wrap", gap:8 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+          {/* Color accent bar */}
+          <div style={{ width:4, height:48, borderRadius:4, background:rs.color, flexShrink:0 }}/>
+          <div>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:2 }}>
+              <span style={{ display:"flex", color:rs.color }}>{IC[rs.icon]}</span>
+              <span style={{ fontSize:10, fontWeight:800, color:rs.color, textTransform:"uppercase", letterSpacing:".1em", background:rs.color+"15", padding:"2px 8px", borderRadius:10 }}>
+                État {cur?.num}
+              </span>
+            </div>
+            <h2 style={{ fontSize:20, fontWeight:800, color:"#1e293b", margin:0, letterSpacing:"-.3px" }}>{cur?.label}</h2>
+            <p style={{ fontSize:12, color:MUT, margin:0 }}>{cur?.sub} · {filtered.length} {t.enregistrements} · {activeFilters} filtre{activeFilters>1?"s":""} actif{activeFilters>1?"s":""}</p>
+          </div>
         </div>
         <ExportButtons filename={`etat_${active}`} title={cur?.label||"Rapport"} tableRef={tableRef}
           headers={["Référence","Type","Fournisseur","Date","Projet","Site","Statut","Montant"]}
           rows={filtered.map(d=>[d.id,d.type,d.fourn||"—",d.date,d.proj||"—",d.site||"—",d.st,fmtN(d.mt)])} />
       </div>
 
+      {/* ── Filters ── */}
       <FilterBar f={f} setF={setF} users={users} t={t}/>
 
-      <div style={{ display:"flex", gap:16 }}>
-        {/* Sidebar */}
-        <div style={{ width:248, flexShrink:0 }}>
-          <div style={{ ...card(), padding:0, overflow:"hidden" }}>
-            <div style={{ padding:"10px 14px", background:"linear-gradient(135deg,#2d4a7a,#324372)", display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ color:"#fff", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:".07em" }}>{t.rapportsDisp}</span>
-            </div>
-            {REPORTS.map(r => (
-              <button key={r.id} onClick={() => setActive(r.id)}
-                style={{
-                  display:"flex", alignItems:"flex-start", gap:10, width:"100%",
-                  padding:"10px 14px", textAlign:"left", fontFamily:"inherit",
-                  background:active===r.id?"#eef3ff":"transparent",
-                  borderLeft:active===r.id?`3px solid ${P}`:"3px solid transparent",
-                  border:"none", borderBottom:`1px solid ${BD}`,
-                  cursor:"pointer", transition:TR,
-                }}
-                onMouseEnter={e=>{ if(active!==r.id) e.currentTarget.style.background="#f8f9fc"; }}
-                onMouseLeave={e=>{ if(active!==r.id) e.currentTarget.style.background="transparent"; }}>
-                <span style={{ fontSize:18, flexShrink:0, marginTop:1 }}>{r.icon}</span>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:10, color:MUT, fontWeight:700 }}>{t.etatSection} {r.num}</div>
-                  <div style={{ fontSize:12, fontWeight:active===r.id?700:500, color:active===r.id?P:"#495057", lineHeight:1.35 }}>{r.label}</div>
-                  <div style={{ fontSize:10.5, color:MUT, marginTop:1 }}>{r.sub}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Report content */}
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
-            <span style={{ fontSize:24 }}>{cur?.icon}</span>
-            <div>
-              <h3 style={{ fontSize:15, fontWeight:700, color:"#212529", marginBottom:1 }}>État {cur?.num} — {cur?.label}</h3>
-              <p style={{ fontSize:11.5, color:MUT }}>{cur?.sub} · {filtered.length} {t.enregistrements}</p>
-            </div>
-          </div>
-
-          {active==="r1"  && <R1  docs={filtered} tableRef={tableRef} />}
-          {active==="r2"  && <R2  docs={filtered} tableRef={tableRef} />}
-          {active==="r3"  && <R3  docs={filtered} users={users} tableRef={tableRef} />}
-          {active==="r4"  && <R4  docs={filtered} users={users} tableRef={tableRef} />}
-          {active==="r5"  && <R5  docs={filtered} tableRef={tableRef} />}
-          {active==="r6"  && <R6  docs={filtered} tableRef={tableRef} />}
-          {active==="r7"  && <R7  docs={filtered} users={users} tableRef={tableRef} />}
-          {active==="r8"  && <R8  docs={filtered} users={users} tableRef={tableRef} />}
-          {active==="r9"  && <R9  docs={filtered} tableRef={tableRef} />}
-          {active==="r10" && <R10 docs={filtered} users={users} tableRef={tableRef} />}
-          {active==="r11" && <R11 docs={filtered} users={users} tableRef={tableRef} />}
-        </div>
-      </div>
+      {/* ── Report content — full width ── */}
+      {active==="r1"  && <R1  docs={filtered} tableRef={tableRef} />}
+      {active==="r2"  && <R2  docs={filtered} tableRef={tableRef} />}
+      {active==="r3"  && <R3  docs={filtered} users={users} tableRef={tableRef} />}
+      {active==="r4"  && <R4  docs={filtered} users={users} tableRef={tableRef} />}
+      {active==="r5"  && <R5  docs={filtered} tableRef={tableRef} />}
+      {active==="r6"  && <R6  docs={filtered} tableRef={tableRef} />}
+      {active==="r7"  && <R7  docs={filtered} users={users} tableRef={tableRef} />}
+      {active==="r8"  && <R8  docs={filtered} users={users} tableRef={tableRef} />}
+      {active==="r9"  && <R9  docs={filtered} tableRef={tableRef} />}
+      {active==="r10" && <R10 docs={filtered} users={users} tableRef={tableRef} />}
+      {active==="r11" && <R11 docs={filtered} users={users} tableRef={tableRef} />}
+      {active==="r12" && <R12 docs={filtered} tableRef={tableRef} />}
+      {active==="r13" && <R13 docs={filtered} tableRef={tableRef} />}
     </div>
   );
 }

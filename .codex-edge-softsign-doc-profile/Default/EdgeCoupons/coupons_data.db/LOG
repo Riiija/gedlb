@@ -1,0 +1,6 @@
+2026/06/13-19:39:16.509 6da8 Reusing MANIFEST D:\git\gedlb\.codex-edge-softsign-doc-profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/06/13-19:39:16.582 6da8 Recovering log #13
+2026/06/13-19:39:16.585 6da8 Reusing old log D:\git\gedlb\.codex-edge-softsign-doc-profile\Default\EdgeCoupons/coupons_data.db/000013.log 
+2026/06/13-19:39:16.853 a7e4 Level-0 table #17: started
+2026/06/13-19:39:16.860 a7e4 Level-0 table #17: 682840 bytes OK
+2026/06/13-19:39:16.862 a7e4 Delete type=0 #13

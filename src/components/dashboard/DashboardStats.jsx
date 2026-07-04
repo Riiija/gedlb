@@ -4,6 +4,7 @@ import{IC}from"../ui/Icons";
 import{ExportButtons}from"../ui/ExportButtons";
 import{card,btn,inp,bdg,P,WH,BD,BG,MUT,SUC,SUCL,SUCD,DNG,DNGL,RSm,TR,TH,TD}from"../../lib/theme";
 import{fmtN}from"../../lib/utils";
+import{useIsMobile}from"../../lib/useResponsive";
 import{useApp}from"../../context/AppContext";
 import{useT}from"../../lib/i18n";
 import{PROJETS,ALL_SITES}from"../../lib/data";
@@ -278,7 +279,7 @@ export default function DashboardStats(){
           </div>
 
           {/* Statuts breakdown */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:20}}>
+          <div style={{display:"grid",gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"1fr 1fr",gap:14,marginBottom:20}}>
             <div style={{...card(),padding:20}}>
               <STitle icon={IC.barChart} title={lang==="en"?"Document status":"Statuts des documents"}/>
               {Object.entries(byStatus).sort(([,a],[,b])=>b-a).map(([st,n])=>(

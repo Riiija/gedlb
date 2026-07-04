@@ -1,8 +1,9 @@
 "use client";
 import{DNG,lbl}from"../../lib/theme";
 export function FG({label,children,req,span=1}){
+  const isMob=typeof window!=="undefined"&&window.innerWidth<=768;
   return(
-    <div style={{gridColumn:`span ${span}`,marginBottom:12}}>
+    <div style={{gridColumn:`span ${isMob?1:span}`,marginBottom:12}}>
       <label style={lbl}>{label}{req&&<span style={{color:DNG}}> *</span>}</label>
       {children}
     </div>

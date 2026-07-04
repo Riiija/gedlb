@@ -1,18 +1,76 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow: hidden; }
+
+/* ── Theme CSS variables ── */
+:root {
+  --ss-bg:     #f6f4fb;
+  --ss-card:   #ffffff;
+  --ss-card2:  #f8f9fc;
+  --ss-border: #e3e6ea;
+  --ss-text:   #1e293b;
+  --ss-muted:  #64748b;
+  --ss-input:  #ffffff;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ss-bg:     #0d1117;
+  --ss-card:   #161b22;
+  --ss-card2:  #1c2230;
+  --ss-border: #30363d;
+  --ss-text:   #c9d1d9;
+  --ss-muted:  #8b949e;
+  --ss-input:  #21262d;
+}
+
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #f4f6f9;
-  color: #212529;
+  background: var(--ss-bg, #f4f6f9);
+  color: var(--ss-text, #212529);
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
+
+/* ── Dark mode scrollbars ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #32437255; border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(--ss-card2, #f1f1f1); }
+::-webkit-scrollbar-thumb { background: var(--ss-border, #32437255); border-radius: 3px; }
+
+/* ── Dark mode form elements ── */
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: var(--ss-input) !important;
+  color: var(--ss-text) !important;
+  border-color: var(--ss-border) !important;
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--ss-muted) !important;
+  opacity: 1;
+}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
 @keyframes scan { 0% { top: -4px; } 100% { top: calc(100% + 4px); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
 a { color: #324372; text-decoration: none; }
+
+/* ─── MOBILE ─── */
+@media (max-width: 768px) {
+  body { font-size: 13px; }
+  input, select, textarea { font-size: 16px !important; }
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 769px) {
+  .hide-desktop { display: none !important; }
+}
+
+/* Sidebar overlay backdrop */
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  z-index: 9998; opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+.sidebar-overlay.open { opacity: 1; pointer-events: auto; }

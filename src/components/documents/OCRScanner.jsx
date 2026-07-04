@@ -10,7 +10,7 @@ import{btn,inp,P,WH,BD,MUT,SUC,SUCL,WRN,WRNL,DNG,DNGL,RSm,RLg,TR}from"../../lib/
 ══════════════════════════════════════════════════════════ */
 
 /* ── Charger un script CDN (une seule fois) ── */
-function loadScript(src){
+export function loadScript(src){
   return new Promise((res,rej)=>{
     if(document.querySelector(`script[src="${src}"]`)){res();return;}
     const s=document.createElement("script");
@@ -20,7 +20,7 @@ function loadScript(src){
 }
 
 /* ── Extraire le texte brut d'un PDF natif via PDF.js ── */
-async function extractTextFromPDF(file){
+export async function extractTextFromPDF(file){
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
   const pdfjsLib=window.pdfjsLib;
   pdfjsLib.GlobalWorkerOptions.workerSrc=
@@ -37,7 +37,7 @@ async function extractTextFromPDF(file){
 }
 
 /* ── Rendre la 1ère page PDF en canvas → image pour Tesseract ── */
-async function pdfToCanvas(file){
+export async function pdfToCanvas(file){
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
   const pdfjsLib=window.pdfjsLib;
   pdfjsLib.GlobalWorkerOptions.workerSrc=
@@ -53,7 +53,7 @@ async function pdfToCanvas(file){
 }
 
 /* ── OCR image avec Tesseract.js ── */
-async function tesseractOCR(source, onProgress){
+export async function tesseractOCR(source, onProgress){
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js");
   const worker=await Tesseract.createWorker(["fra","eng"],1,{
     logger: m=>{
@@ -70,7 +70,7 @@ async function tesseractOCR(source, onProgress){
    PARSEUR INTELLIGENT — extrait les champs d'une facture
    à partir du texte brut OCR ou PDF
 ══════════════════════════════════════════════════════════ */
-function parseInvoiceText(raw){
+export function parseInvoiceText(raw){
   const t=raw.replace(/\r\n/g,"\n");
   const lines=t.split("\n").map(l=>l.trim()).filter(Boolean);
   const norm=t.toLowerCase();
@@ -408,7 +408,7 @@ export function OCRScanner({fid,onDone,onSkip}){
         )}
 
         {/* Fields grid */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+        <div style={{display:"grid",gridTemplateColumns:typeof window!=="undefined"&&window.innerWidth<=768?"1fr":"1fr 1fr",gap:8,marginBottom:14}}>
           {FIELDS.map(({k,l,full})=>{
             const val=edited[k]||"";
             const detected=data[k]&&data[k].length>1;

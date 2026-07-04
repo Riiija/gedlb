@@ -1,0 +1,65 @@
+
+> softdocs@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 4.4s
+ ○ Compiling /backoffice ...
+ ✓ Compiled /backoffice in 9.1s (5660 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 2.9s (5670 modules)
+ GET /login 200 in 3288ms
+ GET /login 200 in 222ms
+ GET /backoffice 200 in 950ms
+ GET /login 200 in 132ms
+ GET /login 200 in 346ms
+ GET /login 200 in 101ms
+ GET /login 200 in 181ms
+ GET /login 200 in 78ms
+ GET /login 200 in 43ms
+ GET /login 200 in 121ms
+ GET /backoffice 200 in 70ms
+ GET /login 200 in 68ms
+ GET /login 200 in 67ms
+ GET /login 200 in 186ms
+ GET /login 200 in 447ms
+ GET /backoffice 200 in 81ms
+ GET /backoffice 200 in 62ms
+ GET /login 200 in 153ms
+ GET /login 200 in 174ms
+ GET /login? 200 in 65ms
+ GET /login 200 in 143ms
+ GET /login 200 in 134ms
+ GET /login 200 in 151ms
+ GET /login 200 in 56ms
+ GET /login 200 in 116ms
+ GET /login 200 in 111ms
+ GET /login 200 in 95ms
+ GET /backoffice 200 in 78ms
+ GET /login 200 in 186ms
+ GET /login 200 in 89ms
+ GET /backoffice 200 in 158ms
+ GET /login 200 in 131ms
+ GET /login 200 in 82ms
+ GET /backoffice 200 in 91ms
+ GET /backoffice 200 in 79ms
+ GET /login 200 in 683ms
+ GET /login 200 in 446ms
+ GET /backoffice 200 in 195ms
+ ✓ Compiled in 38.9s (5678 modules)
+ ✓ Compiled in 44.5s (5678 modules)
+ ✓ Compiled in 3.4s (5678 modules)
+ ✓ Compiled in 6.8s (5678 modules)
+ ✓ Compiled in 7.6s (5676 modules)
+ ✓ Compiled in 3.4s (5676 modules)
+ ✓ Compiled in 4.8s (5676 modules)
+ ✓ Compiled in 6.4s (5680 modules)
+ ✓ Compiled in 4.2s (5680 modules)
+ ✓ Compiled in 2.8s (5680 modules)
+ ✓ Compiled in 7.4s (5680 modules)
+ ✓ Compiled in 5.1s (5680 modules)
+ ✓ Compiled in 3.9s (5680 modules)

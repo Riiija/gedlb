@@ -1,82 +1,72 @@
-# SoftDocs v5 — GED & Processus Financiers
+# SoftDocs V8 — Guide de démarrage
 
-Système de gestion électronique de documents (GED) avec circuit de validation, OCR, paiements XML et gestion des droits par projet/site.
-
-## 🚀 Démarrage rapide
+## Installation
 
 ```bash
 npm install
 npm run dev
 ```
 
-Ouvrir http://localhost:3000
+Accès : http://localhost:3000
 
-## 📦 Build & Déploiement Vercel
+---
 
-```bash
-npm run build
-```
+## Comptes de démonstration (Back-Office)
 
-Ou simplement déposer le projet sur Vercel (import GitHub).
+L'authentification se fait avec **l'adresse email** et le mot de passe.
 
-## 🎨 Thème
+| Nom | Rôle | Email | Mot de passe |
+|-----|------|-------|-------------|
+| Razafy Pierre | **DAF / Admin** | razafy@softdocs.mg | daf2025 |
+| Randria Marie-Claire | Resp. Financier | randria@softdocs.mg | admin123 |
+| Rakoto Jean-Baptiste | Chef de Projet | rakoto@softdocs.mg | chef2025 |
+| Rasoamanarivo Hanta | Comptable Senior | hanta@softdocs.mg | compta2025 |
+| Andriamananjara Lova | Ordonnateur | lova@softdocs.mg | ordo2025 |
+| Ratsimbazafy Noro | Gestionnaire Docs | noro@softdocs.mg | gest2025 |
 
-- Couleur principale : `#324372` (navy)
-- Style AdminLTE moderne
-- Sidebar sombre, navbar blanche
+> **Conseil** : Utilisez le compte DAF (`razafy@softdocs.mg`) pour un accès complet.
 
-## 🏗️ Structure du projet
+---
 
-```
-src/
-├── app/              # Next.js App Router
-│   ├── layout.js     # Layout global + fonts
-│   ├── page.js       # Page principale
-│   └── globals.css   # Styles globaux
-├── context/
-│   └── AppContext.jsx # État global (React Context)
-├── lib/
-│   ├── theme.js      # Design tokens & helpers CSS-in-JS
-│   ├── data.js       # Données initiales & DOC_MENUS
-│   └── utils.js      # Utilitaires (fmtN, gid, ocrSim…)
-└── components/
-    ├── layout/
-    │   ├── Sidebar.jsx   # Navigation latérale
-    │   ├── Topbar.jsx    # Barre supérieure + fil d'Ariane
-    │   └── AppShell.jsx  # Shell principal (routing)
-    ├── ui/
-    │   ├── Icons.jsx     # Bibliothèque SVG icons
-    │   ├── Badge.jsx     # Badge statut + Avatar
-    │   ├── Modal.jsx     # Modale réutilisable
-    │   └── FormGroup.jsx # Groupe de formulaire
-    ├── dashboard/
-    │   └── Dashboard.jsx # Tableau de bord avec KPIs + Charts
-    ├── documents/
-    │   ├── OCRScanner.jsx # Scan + extraction OCR simulé
-    │   ├── DepotDoc.jsx   # Wizard dépôt en 4 étapes
-    │   ├── DocDetail.jsx  # Vue détail + circuit validation
-    │   ├── DocList.jsx    # Liste filtrée de documents
-    │   └── SuiviDoc.jsx   # Suivi par référence
-    ├── users/
-    │   └── GestionUsers.jsx # CRUD utilisateurs + droits
-    ├── payments/
-    │   ├── PaiementsXML.jsx # Génération XML bancaire
-    │   └── Liquidations.jsx # Gestion liquidations
-    └── params/
-        ├── ParamTypes.jsx    # Types de documents + circuits
-        └── ParamReceveurs.jsx # Configuration receveurs
-```
+## Portail Fournisseurs
 
-## ✨ Fonctionnalités
+Accès : http://localhost:3000/fournisseur
 
-- ✅ Gestion de sites par projet (6 villes Madagascar)
-- ✅ Circuit de validation configurable multi-étapes
-- ✅ OCR simulé avec score de confiance et correction
-- ✅ Montant réel corrigeable après OCR
-- ✅ Workflow "Bon à payer" → génération XML
-- ✅ Paiements XML (SEPA/SWIFT) avec nature de remise configurable
-- ✅ 7 droits configurables par utilisateur
-- ✅ Autorisations projet + site granulaires
-- ✅ Dashboard avec 7 KPIs + 4 graphiques Recharts
-- ✅ Documents confidentiels isolés
-- ✅ Liquidations et suivi de paiement
+Aucune authentification requise pour le suivi.  
+L'authentification fournisseur se fait avec NIF + STAT.
+
+---
+
+## Structure des menus Documents
+
+| Menu | Contenu |
+|------|---------|
+| Reçus fournisseurs | Documents soumis via le portail fournisseurs |
+| Service Courriers | Documents déposés en interne (back-office) |
+| Documents Confidentiels | Tous documents avec case "Confidentiel" cochée |
+| Reçu / En Cours / Envoyés… | Vues transversales par statut |
+| Confidentiels en Cours / Refusés… | Sous-menus confidentiels |
+
+---
+
+## Système de droits
+
+Accès : **Paramétrage → Droits & Rôles**
+
+Chaque utilisateur peut avoir des permissions individuelles sur :
+- Accès aux menus (dépôt, liquidation, rapports…)
+- Consultation de chaque catégorie de documents
+- Accès à chaque rapport (R1 à R11)
+- Paramétrage et gestion des utilisateurs
+
+**Profils prédéfinis disponibles :** DAF, Resp. Financier, Chef de Projet, Comptable, Gestionnaire Docs
+
+---
+
+## Technologies
+
+- **Framework** : Next.js 14 (App Router)
+- **UI** : React avec styles inline (pas de dépendances CSS)
+- **Stockage** : localStorage (démo) — remplacer par API/DB en production
+- **OCR** : Simulé pour la démo
+
